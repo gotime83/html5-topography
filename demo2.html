@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+	<meta charset="utf-8">
+</head>
+<body>
+
+<p>test1</p>
+<p>test2</p>
+<p>test3</p>
+
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script>
+d3.selectAll("p").style("color", function() {
+  return "hsl(" + Math.random() * 360 + ",100%,50%)";
+});
+
+d3.select("body").selectAll("p")
+    .data([4, 8, 15, 16, 23, 42])
+  .enter().append("p")
+    .text(function(d) { return "I’m number " + d + "!"; });
+
+// Update…
+var p = d3.select("body").selectAll("p")
+    .data([4, 8, 15, 16, 23, 42])
+    .text(String);
+
+// Enter…
+p.enter().append("p")
+    .text(String);
+
+// Exit…
+p.exit().remove();    
+</script>
+</body>
+</html>

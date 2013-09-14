@@ -1,0 +1,45 @@
+ <!DOCTYPE html>
+<html>
+                                                                 
+ <head>                                                                  
+ <meta charset="utf-8">
+ 
+ <script type="text/javascript" src="../graphic.js" >  </script> 
+ <script type="text/javascript" src="../topo.js" >  </script> 
+ <script type="text/javascript" src="../topo-util.js" >  </script> 
+ <script type="text/javascript" src="../topo-ui.js" >  </script> 
+ <script type="text/javascript"> 
+
+ var topo = null;
+ 
+ window.addEventListener('load', function () {      
+
+	 topo = new Topo('myCanvas');
+	 topo.setUI(new TopoUI());
+	 
+	 var node1 = new Node();
+	 var node2 = new Node();
+	 node1.setLocation(topo.getUI().getRandomPosition(topo));
+	 node2.setLocation(topo.getUI().getRandomPosition(topo));
+	 
+	 topo.addNodes(new Array(node1, node2));
+	 
+	 var link = new Link(node1, node2);
+	 topo.addLinks(new Array(link));
+	 alert(node1.name);
+	 
+	 topo.topoUI.drawTopo(topo);
+	 alert("test");
+ }, false);
+                        
+ </script> 
+
+ </head>                                                                 
+ <body> 
+ <p>                                                                 
+  	<canvas id='myCanvas' width='300' height='300'>
+		Fallback content, in case the browser does not support Canvas.    
+	</canvas>
+ </p>                                  
+ </body>                                                                 
+ </html>

@@ -1,0 +1,135 @@
+<html>
+	<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Hello free topo</title>
+	<style type="text/css">
+	*{
+	    margin:0px;
+	    padding:0px;
+	}
+	body, button, input, select, textarea {
+	    font: 12px/16px Verdana, Helvetica, Arial, sans-serif;
+	}
+	p{
+	    width:580px;
+	    padding-top:3px;
+	    overflow:hidden;
+	}
+	.btn{
+	    width:142px;
+	}
+	</style>
+	<script src="Topo.common.js"></script> 
+	<script src="Topo.uiMgr.js"></script> 
+	<script src="Topo.component.js"></script>
+	<script src="Topo.network.js"></script>  
+	<script src="Topo.link.js"></script> 
+	<script src="Topo.node.js"></script> 
+	<script src="Topo.node.ui.js"></script> 
+	<script src="Topo.link.ui.js"></script> 
+	<script charset="utf-8" src="http://api.map.soso.com/v1.0/main.js"></script>
+
+	<script>
+	Topo.component.registerImage("network","network.png");
+	Topo.component.registerImage("bg","baoshan.jpg");
+//	Topo.uiMgr.setUI("link.ui","Topo.link.canvas.ui");
+	var network
+    window.onload = function ()
+    {
+		 var i = Topo.component.lookupImage("network");
+    	 network = new Topo.network({
+    		id : "myCanvas",
+    		backgroud : "bg" ,
+    		menufactory : function(e){
+    			if(e.target){  // 选中节点
+    				//alert(e.target.id);
+    				document.getElementById("menu").style.display="block";
+    				document.getElementById("menu").style.left=e.point.x;
+    				document.getElementById("menu").style.top=e.point.y;
+    			}else{
+    				alert(e.point.x);
+    			}
+    		},
+    		tipfactory : function(e){
+    			if(e.target){  // 选中节点
+    				console.info(e.target.id);
+    			}
+    		},
+    		nodes : [
+    		         	{
+    		         		id : "n-1",
+    		         		x : 50,
+    		         		y : 50,
+    		         		w : 50,
+    		         		h :50,
+    		         		image : "network"
+    		         	},
+    		         	{
+    		         		id : "n-2",
+    		         		x : 100,
+    		         		y : 150,
+    		         		w : 50,
+    		         		h :50,
+    		         		image : "network"
+    		         	}
+    		         ],
+	    	links : [
+			         	{
+			         		id : "n-1-2",
+			         		from : "n-1",
+			         		to : "n-2"
+			         	}
+			         ] 
+    	});
+    	network.paint();
+    	
+    	var newEle = new Topo.node({
+    		id : "n-3",
+     		x : 200,
+     		y : 150,
+     		w : 50,
+     		h :50,
+     		image : "network"
+    	});
+    	
+    	network.addElement(newEle);
+    	
+    	network.addElement({
+    		id : "n-4",
+     		x : 280,
+     		y : 150,
+     		w : 50,
+     		h :50,
+     		type : "node",
+     		image : "network"
+    	});
+    	
+    	network.addElement({
+    		id : "n-1-4",
+    		from : "n-1",
+    		to : "n-4",
+    		type : "link"
+    	});
+    	
+// var map = new soso.maps.Map(document.getElementById("geo"), {
+// // 地图的中心地理坐标。
+// center: new soso.maps.LatLng(39.916527,116.397128)
+// });
+    	
+    	// network.zoom(0.5);
+    	// network.zoomReset();
+// network.__clearAll();
+    }
+</script>
+	
+	</head>
+	
+	<body>
+	<canvas id="myCanvas" width="800" height="500">[No canvas support]</canvas>
+	<div id="menu" style="background-color:White; border:1px solid #cccccc; padding:10px; display:none; position:absolute;">
+    <li>打开</li>
+    <li>新建打开</li>
+    <li>显示详细信息</li>
+</div>
+	</body>
+</html>

@@ -1,0 +1,83 @@
+JavaScript面向对象编程：原型继承实例
+
+
+　　JavaScript不是纯的面向对象的语言，而是基于对象的语言，对象的继承是以原型函数的形式继承的，下面我们将主要介绍用JavaScript写出面向对象编程模式的的一个小例子  。
+
+　　推荐阅读：浅谈JavaScript中面向对象技术的模拟
+
+　　创建基类
+
+　　第一个我们需要创建一个基类来实例化操作  。New后面的标识符是对象的constructor，任意一个javascript类都可以这样创建这样一个实例  。举个例子，下面的代码创建了一个person类，然后实例化一个person对象  。
+
+function Person(first, last) {  
+  this.first = first;  
+  this.last = last;  
+ }  
+ var person = new Person(“John”, “Dough”); 
+　　添加方法
+
+　　如果你想在类上添加方法来操作这个类的实例，就像这样，我们就可以通过创建”toString”方法去展示对象里的内容  。在我们的基类上这样实现  。
+
+Person.prototype.toString = function() {  
+  return this.first + ” ” + this.last;  
+ };  
+ alert( person ); // displays “John Dough” 
+　　这证明了JavaScript语言的一个特性，“原型”  。简单的说，所有JavaScript对象都有一个私有的原型属性(_proto_)  。这个”私有”意味着这个属性不可见或者只有对象本身可以访问  。当对对象执行查找某个属性的时候，它首先查找实例里的是否存在这个属性，如果没有，就在对象的”私有”原型上查找  。原型可以有他们自己的私有原型，所以查询可以沿着原型链继续执行，直到找到属性或者当到达空的私有原型里，依然没有找到  。
+
+　　创建子类
+
+　　回到person对象，这个时候，我们需要添加更多的信息，让这个person看起来像一个面试者  。那么，我们这样定义  。
+
+KevLinDev.extend = function(subClass, baseClass) {  
+ 
+   function inheritance() {}  
+   inheritance.prototype = baseClass.prototype;  
+   subClass.prototype = new inheritance();  
+   subClasssubClass.prototype.constructor = subClass;  
+   subClass.baseConstructor = baseClass;  
+   subClass.superClass = baseClass.prototype;  
+ 
+}  
+ 
+function Employee(first, last, id) {  
+ 
+    // initialize properties here  
+ 
+}  
+ 
+KevLinDev.extend(Employee, Person); 
+　　我们先创建了一个比较方便的函数去设置我们的继承链  。我们需要让baseclass的属性和subclass的属性对等  。（记住，当我们调用”new”的时候，原型属性会被拷贝到一个实例的”_proto”中，这样就把继承链连接起来）  。然而，我们不能允许subClass和baseClass的原型都指向同一个对象  。看起来如果给baseClass添加方法，然后subClass也同时增加了这个方法，还是比较好的  。
+
+　　但是，如果给subClass添加方法，baseClass也会增加相应的方法  。显然不是我们想要的处理方式  。我们需要一种方式来断开两个原型但是又允许subClass能继承baseClass的方法  。这个时候就需要原型链的帮忙了  。
+
+　　我们先要定义一个叫“inheritance”嵌套的函数  。然后，我们把他的原型指向baseClass原型  。这样，任意一个新的“inheritance”实例都有他们自己的”_proto_”，指向基类的原型  。最终，我们创建一个“inheritance”实例，然后把它分配给subClass原型  。现在我们需要创建一个新的subClass实例，这个实例的”_proto_”将指向“inheritance”实例  。“inheritance”实例的私有原型指向基类的公共原型  。
+
+　　这样，baseClass原型的改变会通过继承链影响到subClass 的实例  。因为我们为subclass的原型属性创建了一个新的对象，我们可以添加到subclass的原型中而不影响基类的原型  。(小豪补充：因为我们现在创建的subClass的”_proto_”是指向“inheritance”实例  。如果直接 subclass.prototype=  baseClass.prototype;那么给子类添加方法的同时，基类也会增加对应的方法)
+
+　　每次你创建一个新的对象实例，实例自身的构造器会指向用来实例化的构造器(. Constructor = )  。我会比较一个实例和一个函数的构造器属性去测试对象实例化的类型  。调用“new inheritance() ”把subclass原型构造器指向了将破坏我的测试的“inheritance”函数  。我可以通过更新构造器属性，让他指向subclass构造器，来修复这个问题  。
+　　最终的两行被当作调用祖先构造器和方法的方便属性  。在下一个部分就需要这样的代码了  。
+
+　　调用基类
+
+　　我们已经定义了一个新的subclass,但是我们依旧需要去合适地初始化  。理想状态下，我们不应该把代码从person里复制到subclass,employee里  。我们需要需找一个好点的方式去传递”first”和”last”参数到Person，让employee自己处理id参数  。下面就是实现方法：
+
+function Employee(first, last, id) {  
+  Employee.baseConstructor.call(this, first, last);  
+  this.id = id;  
+  this.add = function(){alert(“add success”)}  
+ }  
+ 
+KevLinDev.extend(Employee, Person); 
+　　不可否认，这样有点丑陋  。然而，我们通过”call”调基类方法  。这个调用了基类构造器就像前面的”this”  。剩余的参数传递到了调用的函数上  。那么，既然这样，基类的构造器person将执行在”first”和”last”上的任一处理方法  。Employee构造器将处理“id”  。
+
+　　再建立一个子类
+
+　　我已经发现已经建造了一个oop模式去支持一级而不是两级或者更多等级的继承  。让我们再创建一个subclasses去确定我们的概念已经合适成型  。
+
+function Manager(first, last, id, department) {  
+  Manager.baseConstructor.call(this, first, last, id);  
+  this.department = department;  
+ }  
+ 
+KevLinDev.extend(Manager, Employee); 
+　　没其他新的东西，这个代码看起来和我们的employee的定义差不多，也展示了继承正在合理的工作  。
